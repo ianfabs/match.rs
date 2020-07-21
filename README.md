@@ -5,29 +5,27 @@ Deno module to match functions on expressions
 #### Getting Started
 
 ```typescript
-import match from 'https://raw.githubusercontent.com/gustavofsantos/match-ts/master/match.ts';
+import {match, option, some, none} from 'https://raw.githubusercontent.com/gustavofsantos/match-ts/master/match.ts';
 
-class Just {
-  public value = undefined;
+// pretend this is the result of a fetch call or whathaveyou, inthat it could be null/undefined
+let res = {dogs: 22, cats: 19};
 
-  constructor(value: any) {
-    this.value = value;
-  }
-}
-class Nothing {}
-
-const maybe =
-  (thing: any) =>
-    thing ? new Just(thing) : new Nothing();
+const opt = option(res.dogs);
 
 match(
-  maybe(undefined), [
-    (x) => x instanceof Just,
-    (mx) => console.log(`is Just ${(mx as Just).value}`),
-  ], [
-    (x) => x instanceof Nothing,
-    () => console.log('is Nothing'),
-  ])
+  opt,
+  {
+    if: (<Some<number>>opt).value > 20,
+    fn: (ex) => {
+      console.log("there are over twenty!")
+    }
+  },
+  {
+    if: true,
+    fn: (ex) => {
+      console.log("there aren't over twenty :-(")
+    }
+  }
+)
 
-// is Nothing
 ```
